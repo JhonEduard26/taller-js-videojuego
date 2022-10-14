@@ -3,6 +3,69 @@
   --secondary: #ffc75f;
   --tertiary: #f9f871;
   --highlight: #d65db1;
-  --parragraph: #4b4453;
-  --heading: #272529;
+  --parragraph: #faf7ff;
+  --heading: #ebebeb;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background-color: var(--primary);
+  font-family: sans-serif;
+  color: var(--parragraph);
+}
+
+.game-container {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  align-items: center;
+  width: 100vw;
+  height: 100vh;
+}
+
+canvas {
+  border: 4px solid var(--highlight);
+  border-radius: 4px;
+  background-color: var(--tertiary);
+}
+
+.btn-container {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+  gap: 4px;
+}
+
+.btn-container #up {
+  grid-column: 2 / 3;
+  grid-row: 1 / 2;
+}
+
+.btn-container #right {
+  grid-column: 3 / 4;
+  grid-row: 2 / 3;
+}
+
+.btn-container #bottom {
+  grid-column: 2 / 3;
+  grid-row: 3 / 4;
+}
+
+.btn-container #left {
+  grid-column: 1 / 2;
+  grid-row: 2 / 3;
+}
+
+.btn-container button {
+  cursor: pointer;
+  padding: 4px 8px;
+  background-color: var(--secondary);
+  border-radius: 8px;
+  border: 2px solid var(--highlight);
 }
