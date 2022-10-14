@@ -6,6 +6,7 @@ window.addEventListener('resize', setCanvasSize)
 
 let canvasSize = 0
 let elementsSize = 0
+let mapRowCol
 
 function setCanvasSize() {
   window.innerWidth > window.innerHeight
@@ -15,19 +16,25 @@ function setCanvasSize() {
   canvas.setAttribute('width', canvasSize)
   canvas.setAttribute('height', canvasSize)
 
-  elementsSize = canvasSize / 10
+  elementsSize = (canvasSize / 10) - 1
   startGame()
 }
 
 function renderMap() {
-  game.font = elementsSize + 'px sans-serif'
-  game.textAlign = 'end'
+  const map = maps[0]
+  const mapRows = map.trim().split('\n')
+  mapRowCol = mapRows.map(row => row.trim().split(''))
 
-  for (let i = 1; i <= 10; i++) {
-    game.fillText(emojis['X'], elementsSize + 5, elementsSize * i)
-  }
+  game.font = elementsSize + 'px sans-serif'
+
+  mapRowCol.forEach((row, i) => {
+    row.forEach((element, j) => {
+      game.fillText(emojis[element], elementsSize * j, (elementsSize * i) + 35)
+    })
+  })
 }
 
 function startGame() {
   renderMap()
+
 }
