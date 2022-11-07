@@ -14,10 +14,9 @@ btnBottom.addEventListener('click', moveBottom)
 btnLeft.addEventListener('click', moveLeft)
 
 window.addEventListener('load', setCanvasSize)
-window.addEventListener('resize', setCanvasSize)
 
-let canvasSize = 0
-let elementsSize = 0
+let canvasSize = 400
+let elementsSize = 40
 let mapRowCol
 
 const playerPosition = {
@@ -25,39 +24,43 @@ const playerPosition = {
   y: undefined,
 }
 
-function setCanvasSize() {
-  window.innerWidth > window.innerHeight
-    ? canvasSize = window.innerHeight * 0.6
-    : canvasSize = window.innerWidth * 0.6
+const giftPosition = {
+  x: undefined,
+  y: undefined,
+}
 
+let map = maps[0]
+
+function setCanvasSize() {
   canvas.setAttribute('width', canvasSize)
   canvas.setAttribute('height', canvasSize)
-
-  elementsSize = (canvasSize / 10) - 1
   renderMap()
 }
 
 function renderMap() {
-  const map = maps[0]
   const mapRows = map.trim().split('\n')
   mapRowCol = mapRows.map(row => row.trim().split(''))
 
   game.font = elementsSize + 'px sans-serif'
+  game.textAlign = 'end'
 
   game.clearRect(0, 0, canvasSize, canvasSize)
 
   mapRowCol.forEach((row, i) => {
     row.forEach((element, j) => {
-      const posX = elementsSize * j
-      const posY = (elementsSize * i) + 35
-      game.fillText(emojis[element], posX, posY)
+      const posX = (elementsSize * (j + 1)) + 5
+      const posY = elementsSize * (i + 1) - 5
 
       if (element === 'O') {
         if (!playerPosition.x && !playerPosition.y) {
-          playerPosition.x = posX
-          playerPosition.y = posY
+          playerPosition.x = Math.round(posX)
+          playerPosition.y = Math.round(posY)
         }
+      } else if (element === 'I') {
+        giftPosition.x = posX
+        giftPosition.y = posY
       }
+      game.fillText(emojis[element], posX, posY)
     })
   })
   movePlayer()
@@ -65,6 +68,10 @@ function renderMap() {
 
 function movePlayer() {
   game.fillText(emojis['PLAYER'], playerPosition.x, playerPosition.y)
+  if (giftPosition.x === playerPosition.x && giftPosition.y === playerPosition.y) {
+    console.log('Llegaste a la meta')
+    map = maps[1]
+  }
 }
 
 function moveByArrows({ key }) {
@@ -75,18 +82,22 @@ function moveByArrows({ key }) {
 }
 
 function moveUp() {
+  if (playerPosition.y <= elementsSize) return
   playerPosition.y -= elementsSize
   renderMap()
 }
 function moveRight() {
+  if (playerPosition.x >= canvasSize) return
   playerPosition.x += elementsSize
   renderMap()
 }
 function moveBottom() {
+  if (playerPosition.y >= (canvasSize - 5)) return
   playerPosition.y += elementsSize
   renderMap()
 }
 function moveLeft() {
+  if (playerPosition.x <= (elementsSize + 5)) return
   playerPosition.x -= elementsSize
   renderMap()
 }
