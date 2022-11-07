@@ -6,6 +6,8 @@ const btnRight = document.querySelector('#right')
 const btnBottom = document.querySelector('#bottom')
 const btnLeft = document.querySelector('#left')
 
+const spanLives = document.querySelector('#lives')
+
 
 window.addEventListener('keydown', moveByArrows)
 btnUp.addEventListener('click', moveUp)
@@ -30,8 +32,8 @@ const giftPosition = {
 }
 
 let bombPosition = []
-
 let activeMap = 0
+let lives = 3
 
 function setCanvasSize() {
   canvas.setAttribute('width', canvasSize)
@@ -42,6 +44,7 @@ function setCanvasSize() {
 function renderMap() {
   game.font = elementsSize + 'px sans-serif'
   game.textAlign = 'end'
+  spanLives.textContent = emojis['LIVE'].repeat(lives)
 
   let map = maps[activeMap]
 
@@ -108,7 +111,12 @@ function showWin() {
 }
 
 function levelFail() {
-  console.log('Perdiste')
+  lives -= 1
+  if (lives <= 0) {
+    activeMap = 0
+    lives = 3
+  }
+
   playerPosition.x = undefined
   playerPosition.y = undefined
   renderMap()
