@@ -13,32 +13,17 @@ btnRight.addEventListener('click', moveRight)
 btnBottom.addEventListener('click', moveBottom)
 btnLeft.addEventListener('click', moveLeft)
 
-function moveByArrows({ key }) {
-  if (key === 'ArrowUp') moveUp()
-  else if (key === 'ArrowRight') moveRight()
-  else if (key === 'ArrowDown') moveBottom()
-  else if (key === 'ArrowLeft') moveLeft()
-}
-
-function moveUp() {
-  console.log('btnUp')
-}
-function moveRight() {
-  console.log('btnRight')
-}
-function moveBottom() {
-  console.log('btnBottom')
-}
-function moveLeft() {
-  console.log('btnLeft')
-}
-
 window.addEventListener('load', setCanvasSize)
 window.addEventListener('resize', setCanvasSize)
 
 let canvasSize = 0
 let elementsSize = 0
 let mapRowCol
+
+const playerPosition = {
+  x: undefined,
+  y: undefined,
+}
 
 function setCanvasSize() {
   window.innerWidth > window.innerHeight
@@ -49,7 +34,7 @@ function setCanvasSize() {
   canvas.setAttribute('height', canvasSize)
 
   elementsSize = (canvasSize / 10) - 1
-  startGame()
+  renderMap()
 }
 
 function renderMap() {
@@ -59,14 +44,49 @@ function renderMap() {
 
   game.font = elementsSize + 'px sans-serif'
 
+  game.clearRect(0, 0, canvasSize, canvasSize)
+
   mapRowCol.forEach((row, i) => {
     row.forEach((element, j) => {
-      game.fillText(emojis[element], elementsSize * j, (elementsSize * i) + 35)
+      const posX = elementsSize * j
+      const posY = (elementsSize * i) + 35
+      game.fillText(emojis[element], posX, posY)
+
+      if (element === 'O') {
+        if (!playerPosition.x && !playerPosition.y) {
+          playerPosition.x = posX
+          playerPosition.y = posY
+        }
+      }
     })
   })
+  movePlayer()
 }
 
-function startGame() {
-  renderMap()
+function movePlayer() {
+  game.fillText(emojis['PLAYER'], playerPosition.x, playerPosition.y)
+}
 
+function moveByArrows({ key }) {
+  if (key === 'ArrowUp') moveUp()
+  else if (key === 'ArrowRight') moveRight()
+  else if (key === 'ArrowDown') moveBottom()
+  else if (key === 'ArrowLeft') moveLeft()
+}
+
+function moveUp() {
+  playerPosition.y -= elementsSize
+  renderMap()
+}
+function moveRight() {
+  playerPosition.x += elementsSize
+  renderMap()
+}
+function moveBottom() {
+  playerPosition.y += elementsSize
+  renderMap()
+}
+function moveLeft() {
+  playerPosition.x -= elementsSize
+  renderMap()
 }
