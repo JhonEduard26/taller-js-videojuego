@@ -29,7 +29,9 @@ const giftPosition = {
   y: undefined,
 }
 
-let map = maps[0]
+let bombPosition = []
+
+let activeMap = 0
 
 function setCanvasSize() {
   canvas.setAttribute('width', canvasSize)
@@ -38,13 +40,23 @@ function setCanvasSize() {
 }
 
 function renderMap() {
-  const mapRows = map.trim().split('\n')
-  mapRowCol = mapRows.map(row => row.trim().split(''))
-
   game.font = elementsSize + 'px sans-serif'
   game.textAlign = 'end'
 
+  let map = maps[activeMap]
+
+  if (!map) {
+    showWin()
+    return
+  }
+
+  const mapRows = map.trim().split('\n')
+  mapRowCol = mapRows.map(row => row.trim().split(''))
+
+
   game.clearRect(0, 0, canvasSize, canvasSize)
+
+  bombPosition = []
 
   mapRowCol.forEach((row, i) => {
     row.forEach((element, j) => {
@@ -59,6 +71,11 @@ function renderMap() {
       } else if (element === 'I') {
         giftPosition.x = posX
         giftPosition.y = posY
+      } else if (element === 'X') {
+        bombPosition.push({
+          x: posX,
+          y: posY,
+        })
       }
       game.fillText(emojis[element], posX, posY)
     })
@@ -67,11 +84,34 @@ function renderMap() {
 }
 
 function movePlayer() {
-  game.fillText(emojis['PLAYER'], playerPosition.x, playerPosition.y)
   if (giftPosition.x === playerPosition.x && giftPosition.y === playerPosition.y) {
-    console.log('Llegaste a la meta')
-    map = maps[1]
+    levelWin()
   }
+
+  const bombCollision = bombPosition.some(bomb => {
+    return (playerPosition.x === bomb.x) && (playerPosition.y === bomb.y)
+  })
+
+  if (bombCollision) {
+    levelFail()
+  }
+  game.fillText(emojis['PLAYER'], playerPosition.x, playerPosition.y)
+}
+
+function levelWin() {
+  activeMap += 1
+  renderMap()
+}
+
+function showWin() {
+  console.log('Has ganado el juego')
+}
+
+function levelFail() {
+  console.log('Perdiste')
+  playerPosition.x = undefined
+  playerPosition.y = undefined
+  renderMap()
 }
 
 function moveByArrows({ key }) {
