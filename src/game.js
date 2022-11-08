@@ -7,6 +7,8 @@ const btnBottom = document.querySelector('#bottom')
 const btnLeft = document.querySelector('#left')
 
 const spanLives = document.querySelector('#lives')
+const spanTime = document.querySelector('#time')
+const spanRecord = document.querySelector('#record')
 
 
 window.addEventListener('keydown', moveByArrows)
@@ -20,6 +22,10 @@ window.addEventListener('load', setCanvasSize)
 let canvasSize = 400
 let elementsSize = 40
 let mapRowCol
+
+let timeStart
+let timePlayer
+let timeInterval
 
 const playerPosition = {
   x: undefined,
@@ -45,6 +51,12 @@ function renderMap() {
   game.font = elementsSize + 'px sans-serif'
   game.textAlign = 'end'
   spanLives.textContent = emojis['LIVE'].repeat(lives)
+  spanRecord.textContent = localStorage.getItem('score') / 1000 + 's'
+
+  if (!timeStart) {
+    timeStart = Date.now()
+    timeInterval = setInterval(showTime, 100)
+  }
 
   let map = maps[activeMap]
 
@@ -108,6 +120,17 @@ function levelWin() {
 
 function showWin() {
   console.log('Has ganado el juego')
+  const score = localStorage.getItem('score')
+
+  clearInterval(timeInterval)
+  const playerTime = Date.now() - timeStart
+  if (score) {
+    if (score >= playerTime) {
+      localStorage.setItem('score', playerTime)
+    }
+  } else {
+    localStorage.setItem('score', playerTime)
+  }
 }
 
 function levelFail() {
@@ -115,11 +138,17 @@ function levelFail() {
   if (lives <= 0) {
     activeMap = 0
     lives = 3
+    timeStart = undefined
+    clearInterval(timeInterval)
   }
 
   playerPosition.x = undefined
   playerPosition.y = undefined
   renderMap()
+}
+
+function showTime() {
+  spanTime.textContent = (Date.now() - timeStart) / 1000
 }
 
 function moveByArrows({ key }) {
